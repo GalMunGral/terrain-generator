@@ -6,21 +6,29 @@ const PLANE_SIZE = 500;
 
 /** @type {WebGL2RenderingContext} */
 var gl;
-
 /** @type {WebGLProgram} */
 var program
-
 var geom;
 
 const m = mat4.create();
 const v = mat4.create();
 const p = mat4.create();
-const up = vec3.fromValues(0, 0, 1);
-const center = vec3.fromValues(0, 0, 0);
+
 const NEAR_PLANE = 50;
 const FAR_PLANE = 2 * PLANE_SIZE;
-const CAMERA_DIST = PLANE_SIZE;
-const CAMERA_HEIGHT = PLANE_SIZE * 0.8;
+const SPEED = 1;
+
+const center = vec3.fromValues(0, 0, 0);
+const camera = vec3.fromValues(0, PLANE_SIZE, PLANE_SIZE * 1.1);
+
+const forward = vec3.create();
+const right = vec3.create();
+const up = vec3.fromValues(0, 0, 1);
+
+vec3.negate(forward, camera);
+vec3.normalize(forward, forward);
+vec3.cross(right, forward, up);
+vec3.normalize(right, right);
 
 /**
  * Draw one frame
@@ -28,29 +36,31 @@ const CAMERA_HEIGHT = PLANE_SIZE * 0.8;
 function draw(t) {
   gl.clearColor(...IlliniBlue) // f(...[1,2,3]) means f(1,2,3)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-
   if (!geom) return;
 
   gl.useProgram(program);
   gl.bindVertexArray(geom.vao);
 
-  const angle = Math.PI / 2 * (1 + Math.sin(t / 1000));
-  const eye = vec3.fromValues(
-    CAMERA_DIST * Math.cos(angle),
-    CAMERA_DIST * Math.sin(angle),
-    CAMERA_HEIGHT,
-  );
+  if (keysBeingPressed['w']) {
+    vec3.scaleAndAdd(camera, camera, forward, SPEED);
+    vec3.scaleAndAdd(center, center, forward, SPEED);
+  } else if (keysBeingPressed['s']) {
+    vec3.scaleAndAdd(camera, camera, forward, -SPEED);
+    vec3.scaleAndAdd(center, center, forward, -SPEED);
+  } else if (keysBeingPressed['d']) {
+    vec3.scaleAndAdd(camera, camera, right, SPEED);
+    vec3.scaleAndAdd(center, center, right, SPEED);
+  } else if (keysBeingPressed['a']) {
+    vec3.scaleAndAdd(camera, camera, right, -SPEED);
+    vec3.scaleAndAdd(center, center, right, -SPEED);
+  }
 
-  gl.uniform3fv(gl.getUniformLocation(program, 'eye'), eye);
+  mat4.lookAt(v, camera, center, up);
 
-
+  gl.uniform3fv(gl.getUniformLocation(program, 'eye'), camera);
   gl.uniformMatrix4fv(gl.getUniformLocation(program, 'm'), false, m);
-
-  mat4.lookAt(v, eye, center, up);
   gl.uniformMatrix4fv(gl.getUniformLocation(program, 'v'), false, v);
-
   gl.uniformMatrix4fv(gl.getUniformLocation(program, 'p'), false, p);
-
   gl.drawElements(geom.mode, geom.count, geom.type, 0);
 }
 
@@ -94,6 +104,9 @@ async function setup(event) {
   requestAnimationFrame(fillScreen);
 }
 
+const keysBeingPressed = {};
+window.addEventListener('keydown', event => keysBeingPressed[event.key] = true);
+window.addEventListener('keyup', event => keysBeingPressed[event.key] = false);
 
 window.addEventListener('load', setup)
 window.addEventListener('resize', fillScreen)
@@ -184,7 +197,7 @@ function generateTerrain(resolution, slices) {
   const normals = computeNormals(positions, triangles);
 
   // TODO
-  const colors = true 
+  const colors = true
     ? computeColors(positions)
     : positions.map(() => vec3.fromValues(0.5, 0.5, 0.5));
 
