@@ -10,6 +10,7 @@ var gl;
 var program
 var geom;
 
+
 const m = mat4.create();
 const v = mat4.create();
 const p = mat4.create();
@@ -19,7 +20,7 @@ const FAR_PLANE = 2 * PLANE_SIZE;
 const SPEED = 1;
 
 const center = vec3.fromValues(0, 0, 0);
-const camera = vec3.fromValues(0, PLANE_SIZE, PLANE_SIZE * 1.1);
+const camera = vec3.fromValues(0, 0.8 * PLANE_SIZE, PLANE_SIZE);
 
 const forward = vec3.create();
 const right = vec3.create();
@@ -100,6 +101,32 @@ async function setup(event) {
 
   program = await compileAndLinkGLSL(gl, 'terrain_vertex.glsl', 'terrain_fragment.glsl');
   geom = await setupGeomery(gl, program, generateTerrain(100, 100));
+
+  const slot = 0;
+  const texture = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0 + slot);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = 'texture.jpg';
+  img.addEventListener('load', () => {
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      img,
+    );
+
+    const bindPoint = gl.getUniformLocation(program, 'terrainTexture');
+    gl.uniform1i(bindPoint, slot);
+  });
 
   requestAnimationFrame(fillScreen);
 }
@@ -191,22 +218,17 @@ function generateTerrain(resolution, slices) {
       triangles.push([ind(i, j + 1), ind(i + 1, j), ind(i + 1, j + 1)]);
     }
   }
-
   spheroidalWeathering(positions, resolution);
-
-  const normals = computeNormals(positions, triangles);
-
-  // TODO
-  const colors = true
-    ? computeColors(positions)
-    : positions.map(() => vec3.fromValues(0.5, 0.5, 0.5));
 
   return {
     triangles,
     attributes: {
       position: positions.map(v => [...v]),
-      normal: normals.map(v => [...v]),
-      color: colors.map(v => [...v])
+      normal: computeNormals(positions, triangles).map(v => [...v]),
+      texCoord: positions.map(([x, y]) => [
+        (x + PLANE_SIZE / 2) / PLANE_SIZE,
+        (PLANE_SIZE / 2 - y) / PLANE_SIZE,
+      ])
     },
   }
 }
