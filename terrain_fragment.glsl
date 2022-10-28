@@ -2,7 +2,7 @@
 
 precision highp float;
 
-const vec3 light = vec3(0, 1, 1);
+const vec3 light = vec3(1, -0.5, 1);
 const vec3 lightColor = vec3(1, 1, 1);
 const float phong_exp = 80.0;
 

@@ -1,8 +1,12 @@
-const IlliniBlue = new Float32Array([0.075, 0.16, 0.292, 1])
-
 const { mat4, vec3 } = glMatrix;
 
+const IlliniBlue = new Float32Array([0.075, 0.16, 0.292, 1])
 const PLANE_SIZE = 500;
+const FOCAL_LENGTH = 200;
+const NEAR_PLANE = 10;
+const FAR_PLANE = 2 * PLANE_SIZE;
+const SPEED = 5;
+const ROT_SPEED = 0.02;
 
 /** @type {WebGL2RenderingContext} */
 var gl;
@@ -15,21 +19,19 @@ const m = mat4.create();
 const v = mat4.create();
 const p = mat4.create();
 
-const NEAR_PLANE = 50;
-const FAR_PLANE = 2 * PLANE_SIZE;
-const SPEED = 1;
-
-const center = vec3.fromValues(0, 0, 0);
-const camera = vec3.fromValues(0, 0.8 * PLANE_SIZE, PLANE_SIZE);
-
+const camera = vec3.fromValues(0, -PLANE_SIZE, 0.8 * PLANE_SIZE);
+const center = vec3.create();
+const up = vec3.create();
 const forward = vec3.create();
 const right = vec3.create();
-const up = vec3.fromValues(0, 0, 1);
+const deltaCameraRot = mat4.create();
 
 vec3.negate(forward, camera);
 vec3.normalize(forward, forward);
+vec3.set(up, 0, 0, 1);
 vec3.cross(right, forward, up);
 vec3.normalize(right, right);
+vec3.cross(up, right, forward);
 
 /**
  * Draw one frame
@@ -55,7 +57,27 @@ function draw(t) {
     vec3.scaleAndAdd(camera, camera, right, -SPEED);
     vec3.scaleAndAdd(center, center, right, -SPEED);
   }
+  
+  
+  if (keysBeingPressed['ArrowUp']) {
+    mat4.fromRotation(deltaCameraRot, ROT_SPEED, right);
+    vec3.transformMat4(up, up, deltaCameraRot);
+    vec3.transformMat4(forward, forward, deltaCameraRot);
+  } else if (keysBeingPressed['ArrowDown']) {
+    mat4.fromRotation(deltaCameraRot, -ROT_SPEED, right);
+    vec3.transformMat4(up, up, deltaCameraRot);
+    vec3.transformMat4(forward, forward, deltaCameraRot);
+  } else if (keysBeingPressed['ArrowLeft']) {
+    mat4.fromRotation(deltaCameraRot, ROT_SPEED, up);
+    vec3.transformMat4(forward, forward, deltaCameraRot);
+    vec3.transformMat4(right, right, deltaCameraRot);
+  } else if (keysBeingPressed['ArrowRight']) {
+    mat4.fromRotation(deltaCameraRot, -ROT_SPEED, up);
+    vec3.transformMat4(forward, forward, deltaCameraRot);
+    vec3.transformMat4(right, right, deltaCameraRot);
+  }
 
+  vec3.scaleAndAdd(center, camera, forward, FOCAL_LENGTH);
   mat4.lookAt(v, camera, center, up);
 
   gl.uniform3fv(gl.getUniformLocation(program, 'eye'), camera);
@@ -109,11 +131,11 @@ async function setup(event) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
   const img = new Image();
   img.crossOrigin = 'anonymous';
-  img.src = 'texture.jpg';
+  img.src = 'texture.jpeg';
   img.addEventListener('load', () => {
     gl.texImage2D(
       gl.TEXTURE_2D,
