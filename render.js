@@ -11,6 +11,8 @@ const ROT_SPEED = 0.02;
 /** @type {WebGLProgram} */ var program
 var geom;
 
+var fogEnabled = false;
+
 const m = mat4.create();
 const v = mat4.create();
 const p = mat4.create();
@@ -53,8 +55,8 @@ function draw(t) {
     vec3.scaleAndAdd(camera, camera, right, -SPEED);
     vec3.scaleAndAdd(center, center, right, -SPEED);
   }
-  
-  
+
+
   if (keysBeingPressed['ArrowUp']) {
     mat4.fromRotation(deltaCameraRot, ROT_SPEED, right);
     vec3.transformMat4(up, up, deltaCameraRot);
@@ -80,6 +82,7 @@ function draw(t) {
   gl.uniformMatrix4fv(gl.getUniformLocation(program, 'm'), false, m);
   gl.uniformMatrix4fv(gl.getUniformLocation(program, 'v'), false, v);
   gl.uniformMatrix4fv(gl.getUniformLocation(program, 'p'), false, p);
+  gl.uniform1i(gl.getUniformLocation(program, 'fogEnabled'), fogEnabled);
   gl.drawElements(geom.mode, geom.count, geom.type, 0);
 }
 
@@ -151,7 +154,12 @@ async function setup(event) {
 
 const keysBeingPressed = {};
 window.addEventListener('keydown', event => keysBeingPressed[event.key] = true);
-window.addEventListener('keyup', event => keysBeingPressed[event.key] = false);
+window.addEventListener('keyup', event => {
+  keysBeingPressed[event.key] = false
+  if (event.key == 'f') {
+    fogEnabled = !fogEnabled;
+  }
+});
 
 window.addEventListener('load', setup)
 window.addEventListener('resize', fillScreen)

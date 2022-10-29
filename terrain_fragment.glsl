@@ -7,6 +7,7 @@ const vec3 lightColor = vec3(1, 1, 1);
 const vec4 fogColor = vec4(0.5, 0.5, 0.5, 0.5);
 const float phong_exp = 100.0;
 
+uniform bool fogEnabled;
 uniform sampler2D terrainTexture;
 uniform vec3 eye;
 
@@ -30,5 +31,5 @@ void main() {
 
     vec4 objectColor = vec4(diffuse + specular, material.a);
     float f = exp(-0.002 * vDepth);
-    fragColor = f * objectColor + (1.0 - f) * fogColor;
+    fragColor = fogEnabled ? f * objectColor + (1.0 - f) * fogColor : objectColor;
 }
