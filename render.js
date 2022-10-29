@@ -1,19 +1,15 @@
 const { mat4, vec3 } = glMatrix;
 
-const IlliniBlue = new Float32Array([0.075, 0.16, 0.292, 1])
 const PLANE_SIZE = 500;
 const FOCAL_LENGTH = 200;
 const NEAR_PLANE = 10;
-const FAR_PLANE = 2 * PLANE_SIZE;
+const FAR_PLANE = 4 * PLANE_SIZE;
 const SPEED = 5;
 const ROT_SPEED = 0.02;
 
-/** @type {WebGL2RenderingContext} */
-var gl;
-/** @type {WebGLProgram} */
-var program
+/** @type {WebGL2RenderingContext} */ var gl;
+/** @type {WebGLProgram} */ var program
 var geom;
-
 
 const m = mat4.create();
 const v = mat4.create();
@@ -37,8 +33,8 @@ vec3.cross(up, right, forward);
  * Draw one frame
  */
 function draw(t) {
-  gl.clearColor(...IlliniBlue) // f(...[1,2,3]) means f(1,2,3)
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  gl.clearColor(0.5, 0.5, 0.5, 0.5);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   if (!geom) return;
 
   gl.useProgram(program);
