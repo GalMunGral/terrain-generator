@@ -84,6 +84,8 @@ function draw(t) {
   gl.uniformMatrix4fv(gl.getUniformLocation(program, 'p'), false, p);
   gl.uniform1i(gl.getUniformLocation(program, 'fogEnabled'), fogEnabled);
   gl.drawElements(geom.mode, geom.count, geom.type, 0);
+
+  requestAnimationFrame(draw);
 }
 
 /**
@@ -103,10 +105,7 @@ function fillScreen(t) {
 
   if (gl) {
     gl.viewport(0, 0, canvas.width, canvas.height)
-    draw(t)
   }
-
-  requestAnimationFrame(fillScreen);
 }
 
 /**
@@ -149,7 +148,8 @@ async function setup(event) {
     gl.uniform1i(bindPoint, slot);
   });
 
-  requestAnimationFrame(fillScreen);
+  fillScreen();
+  requestAnimationFrame(draw);
 }
 
 const keysBeingPressed = {};
