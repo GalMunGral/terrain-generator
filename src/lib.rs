@@ -7,7 +7,7 @@ extern "C" {
     fn log(s: &str);
 }
 
-use nalgebra::{Matrix4, Rotation3, Unit, Vector3, Point3};
+use nalgebra::{Matrix4, Point3, Rotation3, Unit, Vector3};
 use std::{cell::RefCell, convert::TryInto, f32::consts::PI, rc::Rc};
 use terrain::generate_terrain;
 use utils::{
