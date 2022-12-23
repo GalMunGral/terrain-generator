@@ -1,4 +1,4 @@
-use nalgebra::{ Vector3};
+use nalgebra::Vector3;
 use std::f32::consts::PI;
 
 use crate::utils::{
@@ -64,15 +64,23 @@ pub fn generate_terrain() -> Geometry {
 
     for i in 0..RESOLUTION - 1 {
         for j in 0..RESOLUTION - 1 {
-            triangles.push((ind!(i, j) as u32, ind!(i + 1, j) as u32, ind!(i, j + 1) as u32));
-            triangles.push((ind!(i, j + 1) as u32, ind!(i + 1, j) as u32, ind!(i + 1, j + 1) as u32));
+            triangles.push((
+                ind!(i, j) as u32,
+                ind!(i + 1, j) as u32,
+                ind!(i, j + 1) as u32,
+            ));
+            triangles.push((
+                ind!(i, j + 1) as u32,
+                ind!(i + 1, j) as u32,
+                ind!(i + 1, j + 1) as u32,
+            ));
         }
     }
 
     spheroidal_weather_mut(&mut positions);
 
     let normals = compute_normals(&positions, &triangles);
-    
+
     Geometry {
         triangles: triangles
             .iter()
@@ -108,7 +116,7 @@ pub fn generate_terrain() -> Geometry {
 
 fn spheroidal_weather_mut(positions: &mut Vec<Vector3<f32>>) {
     for _ in 0..5 {
-        let mut average = vec![Vector3::<f32>::zeros();positions.len()];
+        let mut average = vec![Vector3::<f32>::zeros(); positions.len()];
         for i in 0..RESOLUTION {
             for j in 0..RESOLUTION {
                 average[ind!(i, j) as usize] = 0.25
@@ -122,7 +130,7 @@ fn spheroidal_weather_mut(positions: &mut Vec<Vector3<f32>>) {
             for j in 0..RESOLUTION {
                 let p = &mut positions[ind!(i, j) as usize];
                 let a = &average[ind!(i, j) as usize];
-                *p =  0.5 * (*p + *a);
+                *p = 0.5 * (*p + *a);
             }
         }
     }
