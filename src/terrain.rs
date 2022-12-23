@@ -108,8 +108,7 @@ pub fn generate_terrain() -> Geometry {
 
 fn spheroidal_weather_mut(positions: &mut Vec<Vector3<f32>>) {
     for _ in 0..5 {
-        let mut average: Vec<Vector3<f32>> =
-            positions.iter().map(|_| Vector3::<f32>::zeros()).collect();
+        let mut average = vec![Vector3::<f32>::zeros();positions.len()];
         for i in 0..RESOLUTION {
             for j in 0..RESOLUTION {
                 average[ind!(i, j) as usize] = 0.25
