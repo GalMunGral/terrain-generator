@@ -2,11 +2,21 @@ name: GitHub Pages
 on:
   push:
     branches:
-      - "master"
+      - "main"
 
 jobs:
   build-and-deploy:
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -17,13 +27,15 @@ jobs:
       - name: Build
         run: |
           wasm-pack build --target web
-          mkdir dist
+          mkdir -p dist
           cp -r pkg dist
           cp *.html *.glsl *.jpeg dist
-          rm dist/pkg/.gitignore
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          folder: dist
+          path: 'dist'
 
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
