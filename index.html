@@ -1,30 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="utf-8">
-    <title>CS 418 Texture Project</title>
-    <script src="gl-matrix-min.js"></script>
-    <script src="utils.js"></script>
-    <script src="render.js"></script>
-    <style>
-        body {
-            margin: 0;
-            border: none;
-            padding: 0;
-            display: flex;
-        }
+  <meta charset="utf-8" />
+  <title>WebAssembly + WebGL</title>
+  <style>
+    body {
+      margin: 0;
+      border: none;
+      padding: 0;
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
 
-        .display {
-            flex-grow: 1;
-            height: 100vh;
-            line-height: 0rem;
-        }
-    </style>
+    #display {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="display"><canvas width="500" height="500"></canvas></div>
+  <canvas id="display"></canvas>
+  <script type="module">
+    import wasm from "./pkg/rust_terrain.js";
+    wasm();      
+  </script>
 </body>
 
 </html>
