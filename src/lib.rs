@@ -79,14 +79,14 @@ const BOX_SIZE: f32 = 500.0;
 const NEAR_PLANE: f32 = 10.0;
 const FAR_PLANE: f32 = 4.0 * BOX_SIZE;
 const FOCAL_LENGTH: f32 = 200.0;
-const FLIGHT_SPEED: f32 = 5.0;
-const TURNING_SPEED: f32 = 0.02;
+const FLIGHT_SPEED: f32 = 2.0;
+const TURNING_SPEED: f32 = 0.01;
 
 #[wasm_bindgen(start)]
 pub async fn start() -> Result<(), JsValue> {
     set_panic_hook();
 
-    let camera = Rc::new(RefCell::new(Camera::new(0.0, -BOX_SIZE, 0.8 * BOX_SIZE)));
+    let camera = Rc::new(RefCell::new(Camera::new(-BOX_SIZE, -BOX_SIZE, BOX_SIZE)));
     let pressed = Rc::new(RefCell::new(PressedKeys::new()));
     let proj_mat = Rc::new(RefCell::new(Matrix4::<f32>::zeros()));
 
@@ -204,7 +204,7 @@ fn reset_aspect_ratio(
 
     *proj_mat.borrow_mut() = Matrix4::new_perspective(
         canvas.width() as f32 / canvas.height() as f32,
-        PI / 2.0,
+        PI / 4.0,
         NEAR_PLANE,
         FAR_PLANE,
     );
