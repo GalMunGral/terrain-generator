@@ -72,6 +72,7 @@ pub fn generate_terrain() -> Geometry {
     spheroidal_weather_mut(&mut positions);
 
     let normals = compute_normals(&positions, &triangles);
+    
     Geometry {
         triangles: triangles
             .iter()
