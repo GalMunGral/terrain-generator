@@ -1,0 +1,15 @@
+{
+  "name": "rust-terrain",
+  "collaborators": [
+    "Wenqi He <hewenqi96@gmail.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "rust_terrain_bg.wasm",
+    "rust_terrain.js",
+    "rust_terrain.d.ts"
+  ],
+  "module": "rust_terrain.js",
+  "types": "rust_terrain.d.ts",
+  "sideEffects": false
+}
