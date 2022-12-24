@@ -1,4 +1,4 @@
-[DEMO: https://galmungral.github.io/terrain-rust](https://galmungral.github.io/terrain-rust) (Control: WSAD + Arrow Keys)
+[DEMO: https://galmungral.github.io/terrain-generator](https://galmungral.github.io/terrain-generator) (Control: WSAD + Arrow Keys)
 <div align="center">
 
   <h1><code>wasm-pack-template</code></h1>
