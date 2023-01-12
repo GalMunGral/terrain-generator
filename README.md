@@ -1,1 +1,1 @@
-Demo: [https://galmungral.github.io/terrain-generator](https://galmungral.github.io/terrain-generator) (Control: WSAD + Arrow Keys)
+[https://galmungral.github.io/terrain-generator](https://galmungral.github.io/terrain-generator) (Control: WSAD + Arrow Keys)
