@@ -1,7 +1,7 @@
 [package]
 name = "rust-terrain"
 version = "0.1.0"
-authors = ["Wenqi He <hewenqi96@gmail.com>"]
+authors = ["Wenqi He <galmungral@gmail.com>"]
 edition = "2018"
 
 [lib]
